@@ -1,0 +1,95 @@
+<idea-plugin>
+    <id>org.eighteengray.imageapm</id>
+    <name>ImageAPMPlugin</name>
+    <vendor email="eighteengray@163.com" url="http://www.eighteengray.com">eighteengray</vendor>
+
+    <description><![CDATA[
+    <h1>Image APM</h1>
+      <br/>
+      <p>
+        <b>There are two plugins here. TinyCompressPlugin is a Android Studio Plugin to compress PNG/JPG/JPEG/WEBP images by TinyPng api.
+           AssetsGeneratorPlugin is a Android Studio Plugin to generate assets index.
+        </b>
+      </p>
+      <br/>
+      <p>
+        <b> 这里一共有两个插件。TinyCompressPlugin是一个利用TinyPng api来对PNG/JPG/JPEG/WEBP图片进行压缩的Android Studio插件。现在无需 API Key，免费无限制使用
+            AssetsGeneratorPlugin是一个用来生成assets中图片索引的Android Studio插件。
+        </b>
+      </p>
+      <br/>
+    ]]>
+    </description>
+
+    <change-notes><![CDATA[
+      <ul>
+        <li>v2.3 fix timeOut</li>
+        <li>v2.0 去除 API Key，免费无限制使用</li>
+        <li>v1.6 fix bug</li>
+        <li>v1.5 fix bug</li>
+        <li>v1.4 edit doc</li>
+        <li>v1.3 fix some bug</li>
+        <li>v1.2 add info</li>
+        <li>v1.1 fix bug</li>
+        <li>v1.0 init</li>
+      </ul>
+
+    ]]>
+    </change-notes>
+
+    <depends>com.intellij.modules.all</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.json</depends>
+    <depends>org.jetbrains.kotlin</depends>
+
+    <depends>Dart</depends>
+    <depends>io.flutter</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+
+
+    <applicationListeners>
+        <listener
+            class="com.eighteengray.asset_generator.listener.MyProjectManagerListener"
+            topic="com.intellij.openapi.project.ProjectManagerListener"
+        />
+    </applicationListeners>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!--   单行点击     -->
+<!--        <psi.referenceContributor language="yaml" implementation="com.eighteengray.assets_generator.psi.yaml.YamlAssetReferenceContributor" />-->
+<!--        <psi.referenceContributor language="Dart" implementation="com.eighteengray.assets_generator.psi.dart.DartAssetReferenceContributor" />-->
+
+        <!--   左边栏点击     -->
+<!--        <codeInsight.lineMarkerProvider language="yaml" implementationClass="com.eighteengray.assets_generator.psi.yaml.YamlAssetLineMarkerProvider"/>-->
+        <codeInsight.lineMarkerProvider language="Dart" implementationClass="com.eighteengray.asset_generator.provider.AssetsLineMarkerProvider"/>
+
+        <!--   鼠标悬停     -->
+<!--        <lang.documentationProvider language="yaml" implementationClass="com.eighteengray.assets_generator.psi.FlutterAssetDocumentationProvider" order="first"/>-->
+<!--        <lang.documentationProvider language="Dart" implementationClass="com.eighteengray.assets_generator.psi.FlutterAssetDocumentationProvider" order="first"/>-->
+
+    </extensions>
+
+
+    <actions>
+        <action
+            id="com.eighteengray.tiny_compress"
+            class="com.eighteengray.tiny_compress.TinyCompressAction"
+            text="TinyCompress"
+            description="an as plugin to compress image by tinypng api">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="ReplaceInPath"/>
+            <add-to-group group-id="BuildMenu" anchor="last"/>
+        </action>
+
+        <action
+            id="com.eighteengray.assets_generator"
+            class="com.eighteengray.asset_generator.actions.AssetsGeneratorAction"
+            text="Generate Flutter Assets"
+            description="Generate Assets class">
+            <add-to-group group-id="BuildMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt g"/>
+        </action>
+
+    </actions>
+
+</idea-plugin>
