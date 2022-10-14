@@ -23,17 +23,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>v2.3 fix timeOut</li>
-        <li>v2.0 去除 API Key，免费无限制使用</li>
-        <li>v1.6 fix bug</li>
-        <li>v1.5 fix bug</li>
-        <li>v1.4 edit doc</li>
-        <li>v1.3 fix some bug</li>
-        <li>v1.2 add info</li>
-        <li>v1.1 fix bug</li>
-        <li>v1.0 init</li>
+        <li>1.0.0版本发布</li>
       </ul>
-
     ]]>
     </change-notes>
 
