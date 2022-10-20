@@ -38,6 +38,7 @@
     <depends>io.flutter</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
 
+    <idea-version since-build="211" until-build="222.*"/>
 
     <applicationListeners>
         <listener

@@ -5,17 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.10'
 }
 
-String properties(String key) {
-    return project.findProperty(key).toString()
-}
-
-group = properties("pluginGroup")
-version = properties("pluginVersion")
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
+group = 'com.eighteengray'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -43,18 +34,17 @@ dependencies {
 }
 
 intellij {
-    version = properties("platformVersion")
-    pluginName = properties("pluginName")
-    type = properties("platformType")
-    downloadSources = properties("platformDownloadSources").toBoolean()
-    updateSinceUntilBuild = true
-    plugins = properties("platformPlugins").split(',').toList()
+    pluginName = 'ImageApm'
+    version = '213.6461.79'
+    plugins = ['java','Kotlin','yaml','Dart:213.5744.122','io.flutter:63.2.4']
 }
 
 patchPluginXml {
     changeNotes = """
       1.0.0版本发布
       """
+    sinceBuild = '211'
+    untilBuild = '222.*'
 }
 test {
     useJUnitPlatform()
