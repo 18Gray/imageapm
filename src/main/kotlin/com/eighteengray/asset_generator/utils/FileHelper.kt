@@ -14,6 +14,47 @@ import java.io.FileInputStream
 
 object FileHelper {
     var assetsPath: String? = null
+    private const val PROJECT_NAME = "name"
+
+
+    @Suppress("DuplicatedCode")
+    @JvmStatic
+    fun shouldActivateFor(project: Project): Boolean = shouldActivateWith(getPubSpecConfig(project))
+
+    @Suppress("DuplicatedCode")
+    @JvmStatic
+    fun shouldActivateWith(pubSpecConfig: PubSpecConfig?): Boolean {
+        pubSpecConfig?.let {
+            return it.pubRoot.declaresFlutter()
+        }
+        return pubSpecConfig?.pubRoot?.declaresFlutter() ?: false
+    }
+
+    @Suppress("DuplicatedCode")
+    @JvmStatic
+    fun getPubSpecConfig(project: Project): PubSpecConfig? {
+        PubRoot.forFile(getProjectIdeaFile(project))?.let { pubRoot ->
+            FileInputStream(pubRoot.pubspec.path).use { inputStream ->
+                (Yaml().load(inputStream) as? Map<String, Any>)?.let { map ->
+                    return PubSpecConfig(project, pubRoot, map)
+                }
+            }
+        }
+        return null
+    }
+
+    /**
+     * 获取项目.idea目录的一个文件
+     */
+    private fun getProjectIdeaFile(project: Project): VirtualFile? {
+        val ideaFile = project.projectFile ?: project.workspaceFile ?: project.guessProjectDir()?.children?.first()
+        if (ideaFile == null) {
+            PluginUtils.showNotify("Missing .idea/misc.xml or .idea/workspace.xml file")
+        }
+        return ideaFile
+    }
+
+
 
     /**
      * 获取资源路径
@@ -37,8 +78,7 @@ object FileHelper {
         if (assetsPath == null) {
             return null
         }
-        return guessProjectDir?.findChild(assetsPath!!)
-            ?: guessProjectDir!!.createChildDirectory(this, assetsPath!!)
+        return guessProjectDir?.findChild(assetsPath!!) ?: guessProjectDir!!.createChildDirectory(this, assetsPath!!)
     }
 
     /**
@@ -93,6 +133,13 @@ object FileHelper {
     }
 
     /**
+     * 读取生成的类名配置
+     */
+    fun getGeneratedClassName(project: Project): String {
+        return readSetting(project, Constants.KEY_CLASS_NAME) as String? ?: Constants.DEFAULT_CLASS_NAME
+    }
+
+    /**
      * 读取配置
      */
     private fun readSetting(project: Project, key: String): Any? {
@@ -118,29 +165,11 @@ object FileHelper {
         return readSetting(project, Constants.KEY_NAMED_WITH_PARENT) as Boolean? ?: true
     }
 
-    /**
-     * 读取生成的类名配置
-     */
-    fun getGeneratedClassName(project: Project): String {
-        return readSetting(project, Constants.KEY_CLASS_NAME) as String? ?: Constants.DEFAULT_CLASS_NAME
-    }
-
     fun getGeneratedFile(project: Project): VirtualFile {
         return getGeneratedFilePath(project).let {
             val configName = readSetting(project, Constants.KEY_OUTPUT_FILENAME)
             return@let it.findOrCreateChildData(it, "${configName ?: Constants.DEFAULT_CLASS_NAME.toLowerCase()}.dart")
         }
-    }
-
-    /**
-     * 获取项目.idea目录的一个文件
-     */
-    private fun getProjectIdeaFile(project: Project): VirtualFile? {
-        val ideaFile = project.projectFile ?: project.workspaceFile ?: project.guessProjectDir()?.children?.first()
-        if (ideaFile == null) {
-            PluginUtils.showNotify("Missing .idea/misc.xml or .idea/workspace.xml file")
-        }
-        return ideaFile
     }
 
     /**
@@ -156,47 +185,17 @@ object FileHelper {
      * 判断Directory中是否包含这个file
      */
     fun containsDirectoryFile(directory: PsiDirectory, fileName: String): Boolean {
-        return directory.files.filter { it.name.endsWith(".dart") }
-            .firstOrNull { it.name.contains(fileName) } != null
+        return directory.files.filter { it.name.endsWith(".dart") }.firstOrNull { it.name.contains(fileName) } != null
     }
 
-    @Suppress("DuplicatedCode")
-    @JvmStatic
-    fun getPubSpecConfig(project: Project): PubSpecConfig? {
-        PubRoot.forFile(getProjectIdeaFile(project))?.let { pubRoot ->
-            FileInputStream(pubRoot.pubspec.path).use { inputStream ->
-                (Yaml().load(inputStream) as? Map<String, Any>)?.let { map ->
-                    return PubSpecConfig(project, pubRoot, map)
-                }
-            }
-        }
-        return null
-    }
-
-    @Suppress("DuplicatedCode")
-    @JvmStatic
-    fun shouldActivateFor(project: Project): Boolean = shouldActivateWith(getPubSpecConfig(project))
-
-    @Suppress("DuplicatedCode")
-    @JvmStatic
-    fun shouldActivateWith(pubSpecConfig: PubSpecConfig?): Boolean {
-        pubSpecConfig?.let {
-            // Did the user deactivate for this project?
-            // Automatically activated for Flutter projects.
-            return it.pubRoot.declaresFlutter()
-        }
-        return pubSpecConfig?.pubRoot?.declaresFlutter() ?: false
-    }
-
-    private const val PROJECT_NAME = "name"
 
     data class PubSpecConfig(
         val project: Project,
         val pubRoot: PubRoot,
         val map: Map<String, Any>,
         //项目名称,导包需要
-        val name: String = ((if (map[PROJECT_NAME] == "null") null else map[PROJECT_NAME])
-            ?: project.name).toString(),
+        val name: String = ((if (map[PROJECT_NAME] == "null") null else map[PROJECT_NAME]) ?: project.name).toString(),
         val isFlutterModule: Boolean = FlutterModuleUtils.hasFlutterModule(project)
     )
+
 }

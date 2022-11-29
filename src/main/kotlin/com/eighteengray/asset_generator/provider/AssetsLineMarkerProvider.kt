@@ -46,7 +46,6 @@ class AssetsLineMarkerProvider : LineMarkerProvider {
         }
     }
 
-
     private fun showSvgMark(element: PsiElement, anchor: PsiElement,
                             vFile: VirtualFile): LineMarkerInfo<*>? {
         val icon: Icon =
